@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.title }} | UNIVERSAL MARKET</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --dark-blue: #0a192f; --accent-blue: #007bff; }
+        body { font-family: 'Inter', sans-serif; background: #fff; }
+
+        .product-img-main {
+            width: 100%; border-radius: 20px; background: #f4f7f6;
+            height: 500px; object-fit: contain; padding: 20px;
+        }
+        .price-tag { font-size: 2rem; font-weight: 800; color: var(--accent-blue); }
+        .old-price { text-decoration: line-through; color: #888; font-size: 1.2rem; margin-left: 10px; }
+        .badge-sale { font-size: 1rem; padding: 8px 15px; border-radius: 50px; }
+        .quantity-input { width: 80px; border-radius: 50px; text-align: center; border: 1px solid #ddd; }
+
+        /* Navbar va Footer stilini yuqoridagidan ko'chirib oling */
+    </style>
+</head>
+<body>
+
+    <main class="container my-5 pt-5">
+        <div class="row g-5">
+            <div class="col-lg-6">
+                <div class="position-relative">
+                    {% if product.precent > 0 %}
+                    <span class="badge bg-danger position-absolute top-0 start-0 m-3 badge-sale">-{{ product.precent }}%</span>
+                    {% endif %}
+                    <img src="{{ product.main_image.url }}" class="product-img-main shadow-sm border" alt="{{ product.title }}">
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Bosh sahifa</a></li>
+                        <li class="breadcrumb-item"><a href="#">{{ product.category.title }}</a></li>
+                        <li class="breadcrumb-item active">{{ product.title }}</li>
+                    </ol>
+                </nav>
+
+                <h1 class="fw-bold mb-3" style="color: var(--dark-blue);">{{ product.title }}</h1>
+
+                <div class="d-flex align-items-center mb-4">
+                    <div class="text-warning me-2">
+                        <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-half-alt"></i>
+                    </div>
+                    <span class="text-muted">(4.8 / 5 - 120 ta sharh)</span>
+                </div>
+
+                <div class="mb-4">
+                    {% if product.discount_price %}
+                        <span class="price-tag">${{ product.discount_price }}</span>
+                        <span class="old-price">${{ product.price }}</span>
+                    {% else %}
+                        <span class="price-tag">${{ product.price }}</span>
+                    {% endif %}
+                </div>
+
+                <p class="text-muted mb-5 fs-5" style="line-height: 1.8;">
+                    {{ product.description }}
+                </p>
+
+                <hr class="my-4">
+
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <label class="fw-bold d-block mb-2">Soni:</label>
+                        <input type="number" value="1" min="1" max="{{ product.stock }}" class="form-control quantity-input py-2">
+                    </div>
+                    <div class="col">
+                        <label class="fw-bold d-block mb-2">&nbsp;</label>
+                        <button class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm">
+                            <i class="fa-solid fa-cart-plus me-2"></i> Savatga qo'shish
+                        </button>
+                    </div>
+                    <div class="col-auto">
+                        <label class="fw-bold d-block mb-2">&nbsp;</label>
+                        <button class="btn btn-outline-danger py-3 px-4 rounded-circle shadow-sm">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-5 p-4 bg-light rounded-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fa-solid fa-truck-fast fs-4 text-primary me-3"></i>
+                        <div>
+                            <h6 class="fw-bold mb-0">Bepul yetkazib berish</h6>
+                            <small class="text-muted">100$ dan yuqori buyurtmalar uchun</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="mt-5 pt-5">
+            <h3 class="fw-bold mb-4">O'xshash mahsulotlar</h3>
+            <div class="row g-4">
+                {% for item in related_products %}
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    </body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mening mahsulotlarim | UNIVERSAL MARKET</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --dark-blue: #0a192f;
+            --accent-blue: #007bff;
+            --light-bg: #f4f7f6;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: white; color: #333; }
+
+        /* Navbar & Logo (O'zgartirilmadi) */
+        .navbar { padding: 15px 0; border-bottom: 1px solid #eee; background: #fff !important; }
+        .brand-name { font-weight: 800; letter-spacing: 1px; color: var(--dark-blue); font-size: 22px; }
+        .nav-link { font-weight: 600; color: #444 !important; margin: 0 10px; transition: 0.3s; }
+        .nav-link:hover { color: var(--accent-blue) !important; }
+
+        /* SAVATCHA DROPDOWN (O'zgartirilmadi) */
+        .cart-wrapper { position: relative; }
+        .cart-dropdown {
+            position: absolute; top: 100%; right: 0; width: 340px;
+            background: white; border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            padding: 20px; display: none; z-index: 1050;
+            border: 1px solid #eee; margin-top: 10px;
+        }
+        .cart-wrapper:hover .cart-dropdown { display: block; }
+        .cart-items-container { max-height: 280px; overflow-y: auto; }
+        .cart-item-list { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f1f1; }
+        .cart-item-list img { width: 55px; height: 55px; object-fit: cover; border-radius: 8px; margin-right: 12px; }
+        .cart-item-info { flex: 1; }
+        .cart-item-info h6 { font-size: 14px; margin-bottom: 2px; font-weight: 700; color: var(--dark-blue); }
+        .cart-footer { padding-top: 15px; border-top: 1px solid #eee; margin-top: 10px; }
+
+        /* Section Title Style (Home page bilan bir xil) */
+        .section-title { font-weight: 800; text-transform: uppercase; letter-spacing: 2px; position: relative; display: inline-block; }
+        .section-title::after { content: ''; position: absolute; width: 60%; height: 4px; background: var(--accent-blue); bottom: -10px; left: 20%; border-radius: 2px; }
+
+        /* Product Card (Home page bilan bir xil) */
+        .product-card { border: none; transition: 0.4s; position: relative; }
+        .product-card:hover { transform: translateY(-10px); }
+        .img-wrapper {
+            background: #ebebeb; border-radius: 15px; overflow: hidden;
+            height: 300px; display: flex; align-items: center; justify-content: center; position: relative;
+        }
+        .img-wrapper img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+        .status-badge { position: absolute; top: 15px; left: 15px; padding: 5px 15px; border-radius: 5px; font-size: 12px; font-weight: bold; color: white; z-index: 5; }
+
+        /* Action Buttons (Edit/Delete) */
+        .action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
+        .btn-edit { background: var(--dark-blue); color: white; border-radius: 8px; font-weight: 600; padding: 8px; border: none; transition: 0.3s; text-decoration: none; text-align: center; font-size: 14px; }
+        .btn-edit:hover { background: var(--accent-blue); color: white; }
+        .btn-delete { background: #fff; color: #ff4757; border-radius: 8px; font-weight: 600; padding: 8px; border: 1px solid #ff4757; transition: 0.3s; font-size: 14px; }
+        .btn-delete:hover { background: #ff4757; color: white; }
+
+        /* Search Box */
+        .search-container { position: relative; max-width: 400px; width: 100%; }
+        .search-input { border-radius: 50px; padding: 10px 20px 10px 45px; border: 1px solid #eee; background: #f8f9fa; transition: 0.3s; }
+        .search-input:focus { box-shadow: 0 0 15px rgba(0,123,255,0.1); border-color: var(--accent-blue); outline: none; }
+        .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #aaa; }
+
+        /* Empty State */
+        .empty-state { padding: 100px 0; text-align: center; }
+        .empty-icon { font-size: 80px; color: #ddd; margin-bottom: 20px; }
+
+        footer { background: #fafafa; padding: 60px 0; border-top: 1px solid #eee; margin-top: 100px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <div class="bg-dark p-2 rounded-3 me-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    <i class="fa-solid fa-shuttle-space text-primary fs-4"></i>
+                </div>
+                <span class="brand-name">UNIVERSAL<span class="text-primary">MARKET</span></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Bosh sahifa</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Barcha mahsulotlar</a></li>
+                    {% if user.is_staff or user.is_seller %}
+                        <li class="nav-item"><a class="nav-link text-primary fw-bold" href="#"><i class="fa-solid fa-box-open me-1"></i> Mening mahsulotlarim</a></li>
+                        <li class="nav-item ms-lg-2">
+                            <a href="#" class="btn btn-success btn-sm rounded-pill px-3 mt-1 shadow-sm fw-bold">
+                                <i class="fa-solid fa-plus me-1"></i> Mahsulot qo'shish
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown me-3">
+                        <button class="btn btn-light btn-sm dropdown-toggle rounded-pill px-3 border fw-bold" type="button" data-bs-toggle="dropdown">🇺🇿 UZ</button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                            <li><a class="dropdown-item small" href="#">🇺🇿 UZ</a></li>
+                            <li><a class="dropdown-item small" href="#">🇷🇺 RU</a></li>
+                            <li><a class="dropdown-item small" href="#">🇬🇧 EN</a></li>
+                        </ul>
+                    </div>
+                    <a href="#" class="text-dark position-relative me-3">
+                        <i class="fa-regular fa-heart fs-5"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 10px;">0</span>
+                    </a>
+                    <div class="cart-wrapper me-3">
+                        <a href="#" class="text-dark position-relative">
+                            <i class="fa-solid fa-cart-shopping fs-5"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" style="font-size: 10px;">{{ cart_items|length }}</span>
+                        </a>
+                        </div>
+                    {% if user.is_authenticated %}
+                        <form action="#" method="post" class="d-inline">{% csrf_token %}<button type="submit" class="btn btn-link text-danger p-0 me-3"><i class="fa-solid fa-right-from-bracket fs-5"></i></button></form>
+                        <a href="#"><img src="{% if user.image %}{{ user.image.url }}{% else %}https://via.placeholder.com/35{% endif %}" class="rounded-circle border" style="width: 35px; height: 35px; object-fit: cover;"></a>
+                    {% else %}
+                        <a href="#" class="btn btn-outline-dark btn-sm rounded-pill px-3 me-2">Kirish</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-5 pt-4">
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5 gap-4">
+            <div>
+                <h2 class="section-title">Mening mahsulotlarim</h2>
+            </div>
+            <div class="search-container">
+                <form action="" method="GET">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" name="q" class="form-control search-input" placeholder="Mahsulotlarni qidirish...">
+                </form>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            {% for product in my_products %}
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="product-card">
+                    {% if product.precent > 0 %}
+                    <span class="status-badge bg-danger">Sale -{{ product.precent }}%</span>
+                    {% endif %}
+
+                    <div class="img-wrapper">
+                        <a href="{% url 'product_detail' product.id %}">
+                            <img src="{{ product.main_image.url }}" alt="{{ product.title }}">
+                        </a>
+                    </div>
+
+                    <div class="mt-3">
+                        <h6 class="fw-bold mb-1 text-truncate" title="{{ product.title }}">{{ product.title }}</h6>
+                        <p class="text-muted small mb-2">{{ product.category.title }}</p>
+
+                        <div class="d-flex align-items-center gap-2">
+                            {% if product.discount_price %}
+                                <h5 class="fw-bold mb-0 text-primary">${{ product.discount_price }}</h5>
+                                <small class="text-muted text-decoration-line-through">${{ product.price }}</small>
+                            {% else %}
+                                <h5 class="fw-bold mb-0 text-primary">${{ product.price }}</h5>
+                            {% endif %}
+                        </div>
+
+                        <div class="action-btns">
+                            <a href="{% url 'product_edit' product.id %}" class="btn-edit">
+                                <i class="fa-solid fa-pen-to-square me-1"></i> Edit
+                            </a>
+
+                            <form action="{% url 'product_delete' product.id %}" method="POST" onsubmit="return confirm('Haqiqatdan ham o\'chirmoqchimisiz?')">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-delete w-100">
+                                    <i class="fa-solid fa-trash-can me-1"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="empty-state shadow-sm rounded-4 bg-light">
+                    <div class="empty-icon">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <h3 class="fw-bold">Siz hali mahsulot qo'shmagansiz</h3>
+                    <p class="text-muted">Sotuvni boshlash uchun birinchi mahsulotingizni joylashtiring.</p>
+                    <a href="#" class="btn btn-primary btn-lg rounded-pill px-5 mt-3 shadow">
+                        <i class="fa-solid fa-plus me-2"></i> Mahsulot qo'shish
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="brand-name mb-4">UNIVERSAL MARKET</h3>
+                    <p class="text-muted w-75">Biz bilan kelajak texnologiyalarini his qiling. Sifat va ishonch — bizning asosiy tamoyilimiz.</p>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="fw-bold mb-3">Havolalar</h6>
+                    <ul class="list-unstyled text-muted small">
+                        <li class="mb-2">Barcha mahsulotlar</li>
+                        <li class="mb-2">Biz haqimizda</li>
+                        <li class="mb-2">Kontaktlar</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="fw-bold mb-3">Bizni kuzating</h6>
+                    <div class="d-flex gap-3 fs-5">
+                        <i class="fab fa-instagram"></i><i class="fab fa-telegram"></i><i class="fab fa-facebook"></i>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <p class="text-center text-muted small">&copy; 2026 Universal Market. Barcha huquqlar himoyalangan.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
